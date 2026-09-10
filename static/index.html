@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GMAO — Stock pièces de rechange</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4F5F2;
+    --surface: #FFFFFF;
+    --ink: #1E2A24;
+    --ink-muted: #5B6B62;
+    --line: #DADFD9;
+    --accent: #3B6E5C;
+    --accent-dark: #2A4F41;
+    --danger: #C1442D;
+    --danger-bg: #FBEAE6;
+    --success: #4E8B5C;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 3px solid var(--accent);
+    padding: 20px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.2px;
+  }
+  header p {
+    margin: 2px 0 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+  .btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--accent-dark); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-muted);
+    border: 1px solid var(--line);
+  }
+  .btn-ghost:hover { border-color: var(--ink-muted); color: var(--ink); }
+  .btn-danger { background: var(--danger); }
+  .btn-danger:hover { background: #9E3623; }
+  .btn-small { padding: 6px 12px; font-size: 13px; }
+
+  main {
+    max-width: 1040px;
+    margin: 32px auto;
+    padding: 0 32px;
+  }
+
+  #alerte-banner {
+    display: none;
+    background: var(--danger-bg);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 12px 16px;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr.stock-bas { background: var(--danger-bg); }
+
+  .ref { font-weight: 600; }
+  .qty { font-weight: 600; font-size: 15px; }
+  .badge-alerte {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--danger);
+  }
+  .actions { display: flex; gap: 6px; }
+
+  .empty-state {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-muted);
+  }
+
+  /* Panneau latéral (formulaire) */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 26, 22, 0.35);
+    z-index: 10;
+  }
+  .panel {
+	z-index: 11;
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 380px;
+    background: var(--surface);
+    box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+    padding: 28px;
+    overflow-y: auto;
+  }
+  .panel h2 { font-size: 17px; margin: 0 0 20px; }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    margin-bottom: 5px;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 14px;
+    background: white;
+  }
+  .field input:focus, .field select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+    border-color: var(--accent);
+  }
+  .field-error {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+  }
+  .panel-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>GMAO — Stock pièces de rechange</h1>
+    <p>Suivi des références, seuils d'alerte et mouvements</p>
+  </div>
+  <button class="btn" id="btn-nouvelle-piece">+ Nouvelle pièce</button>
+</header>
+
+<main>
+  <div id="alerte-banner"></div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Référence</th>
+          <th>Désignation</th>
+          <th>Fournisseur</th>
+          <th>Stock</th>
+          <th>Seuil</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+      </tbody>
+    </table>
+    <div class="empty-state" id="empty-state" style="display:none;">
+      Aucune pièce en stock pour l'instant. Ajoute ta première pièce pour commencer.
+    </div>
+  </div>
+</main>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- Panneau : nouvelle pièce -->
+<div class="panel" id="panel-nouvelle" style="display:none;">
+  <h2>Nouvelle pièce</h2>
+  <div class="field">
+    <label for="np-reference">Référence</label>
+    <input id="np-reference" type="text" placeholder="ex: ROUL-6204" />
+    <div class="field-error" id="err-reference"></div>
+  </div>
+  <div class="field">
+    <label for="np-designation">Désignation</label>
+    <input id="np-designation" type="text" placeholder="ex: Roulement à billes 6204" />
+  </div>
+  <div class="field">
+    <label for="np-fournisseur">Fournisseur</label>
+    <input id="np-fournisseur" type="text" placeholder="ex: SKF" />
+  </div>
+  <div class="field">
+    <label for="np-quantite">Quantité initiale</label>
+    <input id="np-quantite" type="number" value="0" min="0" />
+  </div>
+  <div class="field">
+    <label for="np-seuil">Seuil d'alerte</label>
+    <input id="np-seuil" type="number" value="1" min="0" />
+  </div>
+  <div class="panel-actions">
+    <button class="btn" id="np-valider">Créer la pièce</button>
+    <button class="btn btn-ghost" id="np-annuler">Annuler</button>
+  </div>
+</div>
+
+<!-- Panneau : mouvement de stock -->
+<div class="panel" id="panel-mouvement" style="display:none;">
+  <h2 id="mv-titre">Mouvement de stock</h2>
+  <div class="field">
+    <label for="mv-type">Type de mouvement</label>
+    <select id="mv-type">
+      <option value="entree">Entrée (réception)</option>
+      <option value="sortie">Sortie (utilisation)</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="mv-quantite">Quantité</label>
+    <input id="mv-quantite" type="number" value="1" min="1" />
+    <div class="field-error" id="err-mouvement"></div>
+  </div>
+  <div class="field">
+    <label for="mv-commentaire">Commentaire (optionnel)</label>
+    <input id="mv-commentaire" type="text" placeholder="ex: réception commande n°45" />
+  </div>
+  <div class="panel-actions">
+    <button class="btn" id="mv-valider">Valider</button>
+    <button class="btn btn-ghost" id="mv-annuler">Annuler</button>
+  </div>
+</div>
+
+<script>
+const API = "/api/pieces";
+let pieceMouvementId = null;
+
+async function chargerPieces() {
+  const res = await fetch(API);
+  const pieces = await res.json();
+  const tbody = document.getElementById("table-body");
+  const emptyState = document.getElementById("empty-state");
+  tbody.innerHTML = "";
+
+  if (pieces.length === 0) {
+    emptyState.style.display = "block";
+  } else {
+    emptyState.style.display = "none";
+  }
+
+  let nbAlertes = 0;
+
+  pieces.forEach(p => {
+    const enAlerte = p.quantite_stock <= p.seuil_alerte;
+    if (enAlerte) nbAlertes++;
+
+    const tr = document.createElement("tr");
+    if (enAlerte) tr.classList.add("stock-bas");
+
+    tr.innerHTML = `
+      <td class="ref mono">${escapeHtml(p.reference)}</td>
+      <td>${escapeHtml(p.designation)}</td>
+      <td>${escapeHtml(p.fournisseur || "—")}</td>
+      <td class="qty mono">${p.quantite_stock}${enAlerte ? '<span class="badge-alerte">STOCK BAS</span>' : ''}</td>
+      <td class="mono">${p.seuil_alerte}</td>
+      <td class="actions">
+        <button class="btn btn-ghost btn-small" onclick="ouvrirMouvement(${p.id}, '${escapeHtml(p.reference)}')">Mouvement</button>
+        <button class="btn btn-danger btn-small" onclick="supprimerPiece(${p.id})">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const banner = document.getElementById("alerte-banner");
+  if (nbAlertes > 0) {
+    banner.style.display = "block";
+    banner.textContent = `${nbAlertes} pièce${nbAlertes > 1 ? "s" : ""} sous le seuil d'alerte — réapprovisionnement à prévoir.`;
+  } else {
+    banner.style.display = "none";
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// --- Panneau nouvelle pièce ---
+function ouvrirPanel(id) {
+  document.getElementById("overlay").style.display = "block";
+  document.getElementById(id).style.display = "block";
+}
+function fermerPanels() {
+  document.getElementById("overlay").style.display = "none";
+  document.getElementById("panel-nouvelle").style.display = "none";
+  document.getElementById("panel-mouvement").style.display = "none";
+  document.getElementById("err-reference").style.display = "none";
+  document.getElementById("err-mouvement").style.display = "none";
+}
+
+document.getElementById("btn-nouvelle-piece").onclick = () => ouvrirPanel("panel-nouvelle");
+document.getElementById("np-annuler").onclick = fermerPanels;
+document.getElementById("overlay").onclick = fermerPanels;
+document.getElementById("mv-annuler").onclick = fermerPanels;
+
+document.getElementById("np-valider").onclick = async () => {
+  const body = {
+    reference: document.getElementById("np-reference").value.trim(),
+    designation: document.getElementById("np-designation").value.trim(),
+    fournisseur: document.getElementById("np-fournisseur").value.trim() || null,
+    quantite_stock: parseInt(document.getElementById("np-quantite").value, 10),
+    seuil_alerte: parseInt(document.getElementById("np-seuil").value, 10),
+  };
+
+  const res = await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    const errEl = document.getElementById("err-reference");
+    errEl.textContent = err.detail;
+    errEl.style.display = "block";
+    return;
+  }
+
+  document.getElementById("np-reference").value = "";
+  document.getElementById("np-designation").value = "";
+  document.getElementById("np-fournisseur").value = "";
+  document.getElementById("np-quantite").value = "0";
+  document.getElementById("np-seuil").value = "1";
+
+  fermerPanels();
+  chargerPieces();
+};
+
+// --- Panneau mouvement ---
+function ouvrirMouvement(id, reference) {
+  pieceMouvementId = id;
+  document.getElementById("mv-titre").textContent = `Mouvement — ${reference}`;
+  document.getElementById("mv-quantite").value = "1";
+  document.getElementById("mv-commentaire").value = "";
+  ouvrirPanel("panel-mouvement");
+}
+
+document.getElementById("mv-valider").onclick = async () => {
+  const body = {
+    type_mouvement: document.getElementById("mv-type").value,
+    quantite: parseInt(document.getElementById("mv-quantite").value, 10),
+    commentaire: document.getElementById("mv-commentaire").value.trim() || null,
+  };
+
+  const res = await fetch(`${API}/${pieceMouvementId}/mouvement`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    const errEl = document.getElementById("err-mouvement");
+    errEl.textContent = err.detail;
+    errEl.style.display = "block";
+    return;
+  }
+
+  fermerPanels();
+  chargerPieces();
+};
+
+async function supprimerPiece(id) {
+  if (!confirm("Supprimer cette pièce définitivement ?")) return;
+  await fetch(`${API}/${id}`, { method: "DELETE" });
+  chargerPieces();
+}
+
+chargerPieces();
+</script>
+</body>
+</html>

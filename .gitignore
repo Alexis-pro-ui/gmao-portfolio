@@ -1,0 +1,17 @@
+# Environnement virtuel Python
+venv/
+.venv/
+
+# Base de données locale (ne doit pas être versionnée)
+*.db
+
+# Fichiers Python compilés
+__pycache__/
+*.pyc
+
+# Captures d'écran générées par les tests en échec
+echec_*.png
+
+# Rapports de tests (générés, pas à versionner)
+.pytest_cache/
+report.html
