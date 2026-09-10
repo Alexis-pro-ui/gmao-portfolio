@@ -21,7 +21,7 @@ L'application elle-même a été développée avec l'assistance de l'IA (Claude)
 
 ## 🖼️ Aperçu
 
-[Interface GMAO](screenshot/interface.png) 
+![Interface GMAO](screenshot/interface.png) 
 
 ## 🛠️ Stack technique
 
