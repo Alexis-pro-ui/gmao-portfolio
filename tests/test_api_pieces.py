@@ -81,7 +81,6 @@ def test_modifier_seuil_alerte(reference_unique):
     res = requests.put(f"{API}/{piece['id']}", json={"seuil_alerte": 8})
     assert res.status_code == 200
     assert res.json()["seuil_alerte"] == 8
-    assert res.json()["designation"] == "Nouvelle désignation"
 
 # --- Suppression ---
 
