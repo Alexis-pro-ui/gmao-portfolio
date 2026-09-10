@@ -38,5 +38,27 @@ jobs:
             sleep 1
           done
 
-      - name: Lancer la suite de tests
-        run: pytest tests/ -v
+      - name: Lancer la suite de tests (génère les données Allure)
+        id: tests
+        run: pytest tests/ -v --alluredir=allure-results
+        continue-on-error: true  # on veut publier le rapport même si un test échoue
+ 
+      - name: Générer le rapport Allure (avec historique des exécutions précédentes)
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          keep_reports: 20
+ 
+      - name: Publier le rapport sur GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+ 
+      - name: Faire échouer le job si des tests ont échoué
+        if: steps.tests.outcome == 'failure'
+        run: exit 1

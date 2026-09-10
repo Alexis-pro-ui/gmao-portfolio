@@ -15,3 +15,6 @@ echec_*.png
 # Rapports de tests (générés, pas à versionner)
 .pytest_cache/
 report.html
+
+allure-results/
+allure-report/
