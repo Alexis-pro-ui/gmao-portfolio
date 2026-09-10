@@ -76,6 +76,11 @@ def test_modifier_designation_piece(reference_unique):
     assert res.status_code == 200
     assert res.json()["designation"] == "Nouvelle désignation"
 
+def test_modifier_seuil_alerte(reference_unique):
+    piece = creer_piece(reference_unique, quantite=10, seuil=2)
+    res = requests.put(f"{API}/{piece['id']}", json={"seuil_alerte": 8})
+    assert res.status_code == 200
+    assert res.json()["seuil_alerte"] == 8
 
 # --- Suppression ---
 
