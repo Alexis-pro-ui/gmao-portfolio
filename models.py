@@ -27,3 +27,8 @@ class MouvementStock(SQLModel, table=True):
     quantite: int
     date: datetime = Field(default_factory=datetime.utcnow)
     commentaire: Optional[str] = None
+
+class Utilisateur(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    username: str = Field(index=True, unique=True)
+    mot_de_passe_hache: str

@@ -29,7 +29,46 @@
     line-height: 1.5;
   }
   .mono { font-family: 'IBM Plex Mono', monospace; }
-
+ 
+  /* Écran de connexion */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 32px;
+    width: 320px;
+  }
+  .login-box h1 {
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .login-box p {
+    color: var(--ink-muted);
+    font-size: 13px;
+    margin: 0 0 20px;
+  }
+  #login-error {
+    display: none;
+    background: var(--danger-bg);
+    color: var(--danger);
+    padding: 8px 10px;
+    border-radius: 3px;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  #app-content { display: none; }
+ 
+ 
   header {
     background: var(--surface);
     border-bottom: 3px solid var(--accent);
@@ -70,13 +109,13 @@
   .btn-danger { background: var(--danger); }
   .btn-danger:hover { background: #9E3623; }
   .btn-small { padding: 6px 12px; font-size: 13px; }
-
+ 
   main {
     max-width: 1040px;
     margin: 32px auto;
     padding: 0 32px;
   }
-
+ 
   #alerte-banner {
     display: none;
     background: var(--danger-bg);
@@ -88,7 +127,7 @@
     font-size: 14px;
     font-weight: 500;
   }
-
+ 
   .table-wrap {
     background: var(--surface);
     border: 1px solid var(--line);
@@ -112,7 +151,7 @@
   }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr.stock-bas { background: var(--danger-bg); }
-
+ 
   .ref { font-weight: 600; }
   .qty { font-weight: 600; font-size: 15px; }
   .badge-alerte {
@@ -123,13 +162,13 @@
     color: var(--danger);
   }
   .actions { display: flex; gap: 6px; }
-
+ 
   .empty-state {
     padding: 48px 24px;
     text-align: center;
     color: var(--ink-muted);
   }
-
+ 
   /* Panneau latéral (formulaire) */
   .overlay {
     display: none;
@@ -139,7 +178,6 @@
     z-index: 10;
   }
   .panel {
-	z-index: 11;
     position: fixed;
     top: 0; right: 0; bottom: 0;
     width: 380px;
@@ -147,6 +185,7 @@
     box-shadow: -4px 0 24px rgba(0,0,0,0.12);
     padding: 28px;
     overflow-y: auto;
+    z-index: 11;
   }
   .panel h2 { font-size: 17px; margin: 0 0 20px; }
   .field { margin-bottom: 16px; }
@@ -185,18 +224,40 @@
 </style>
 </head>
 <body>
-
+ 
+<div id="login-screen">
+  <div class="login-box">
+    <h1>GMAO</h1>
+    <p>Connecte-toi pour accéder au stock</p>
+    <div class="field">
+      <label for="login-username">Identifiant</label>
+      <input id="login-username" type="text" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label for="login-password">Mot de passe</label>
+      <input id="login-password" type="password" autocomplete="current-password" />
+    </div>
+    <button class="btn" id="btn-login" style="width:100%;">Se connecter</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+ 
+<div id="app-content">
+ 
 <header>
   <div>
     <h1>GMAO — Stock pièces de rechange</h1>
     <p>Suivi des références, seuils d'alerte et mouvements</p>
   </div>
-  <button class="btn" id="btn-nouvelle-piece">+ Nouvelle pièce</button>
+  <div style="display:flex; gap:8px;">
+    <button class="btn" id="btn-nouvelle-piece">+ Nouvelle pièce</button>
+    <button class="btn btn-ghost" id="btn-logout">Déconnexion</button>
+  </div>
 </header>
-
+ 
 <main>
   <div id="alerte-banner"></div>
-
+ 
   <div class="table-wrap">
     <table>
       <thead>
@@ -217,9 +278,9 @@
     </div>
   </div>
 </main>
-
+ 
 <div class="overlay" id="overlay"></div>
-
+ 
 <!-- Panneau : nouvelle pièce -->
 <div class="panel" id="panel-nouvelle" style="display:none;">
   <h2>Nouvelle pièce</h2>
@@ -249,7 +310,7 @@
     <button class="btn btn-ghost" id="np-annuler">Annuler</button>
   </div>
 </div>
-
+ 
 <!-- Panneau : mouvement de stock -->
 <div class="panel" id="panel-mouvement" style="display:none;">
   <h2 id="mv-titre">Mouvement de stock</h2>
@@ -274,33 +335,113 @@
     <button class="btn btn-ghost" id="mv-annuler">Annuler</button>
   </div>
 </div>
-
+ 
+</div> <!-- fin #app-content -->
+ 
 <script>
 const API = "/api/pieces";
 let pieceMouvementId = null;
-
+ 
+// --- Gestion du token d'authentification ---
+ 
+function getToken() {
+  return localStorage.getItem("gmao_token");
+}
+function setToken(token) {
+  localStorage.setItem("gmao_token", token);
+}
+function clearToken() {
+  localStorage.removeItem("gmao_token");
+}
+ 
+function afficherLogin() {
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("app-content").style.display = "none";
+}
+function afficherApp() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app-content").style.display = "block";
+}
+ 
+// Wrapper autour de fetch() qui ajoute le token à chaque requête API,
+// et renvoie automatiquement à l'écran de login si le token est
+// invalide/expiré (réponse 401).
+async function authFetch(url, options = {}) {
+  options.headers = { ...(options.headers || {}), "Authorization": `Bearer ${getToken()}` };
+  const res = await fetch(url, options);
+  if (res.status === 401) {
+    clearToken();
+    afficherLogin();
+    throw new Error("Session expirée");
+  }
+  return res;
+}
+ 
+document.getElementById("btn-login").onclick = async () => {
+  const username = document.getElementById("login-username").value.trim();
+  const password = document.getElementById("login-password").value;
+  const errEl = document.getElementById("login-error");
+  errEl.style.display = "none";
+ 
+  const body = new URLSearchParams();
+  body.set("username", username);
+  body.set("password", password);
+ 
+  const res = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: body,
+  });
+ 
+  if (!res.ok) {
+    errEl.textContent = "Identifiant ou mot de passe incorrect";
+    errEl.style.display = "block";
+    return;
+  }
+ 
+  const data = await res.json();
+  setToken(data.access_token);
+  afficherApp();
+  chargerPieces();
+};
+ 
+document.getElementById("btn-logout").onclick = () => {
+  clearToken();
+  afficherLogin();
+};
+ 
+// Point d'entrée : si un token existe déjà (session précédente), on
+// tente directement d'afficher l'appli ; authFetch renverra vers le
+// login automatiquement si ce token n'est plus valide.
+if (getToken()) {
+  afficherApp();
+  chargerPieces();
+} else {
+  afficherLogin();
+}
+ 
 async function chargerPieces() {
-  const res = await fetch(API);
+  const res = await authFetch(API);
   const pieces = await res.json();
   const tbody = document.getElementById("table-body");
   const emptyState = document.getElementById("empty-state");
   tbody.innerHTML = "";
-
+ 
   if (pieces.length === 0) {
     emptyState.style.display = "block";
   } else {
     emptyState.style.display = "none";
   }
-
+ 
   let nbAlertes = 0;
-
+ 
   pieces.forEach(p => {
     const enAlerte = p.quantite_stock <= p.seuil_alerte;
     if (enAlerte) nbAlertes++;
-
+ 
     const tr = document.createElement("tr");
     if (enAlerte) tr.classList.add("stock-bas");
-
+ 
     tr.innerHTML = `
       <td class="ref mono">${escapeHtml(p.reference)}</td>
       <td>${escapeHtml(p.designation)}</td>
@@ -314,7 +455,7 @@ async function chargerPieces() {
     `;
     tbody.appendChild(tr);
   });
-
+ 
   const banner = document.getElementById("alerte-banner");
   if (nbAlertes > 0) {
     banner.style.display = "block";
@@ -323,13 +464,13 @@ async function chargerPieces() {
     banner.style.display = "none";
   }
 }
-
+ 
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
 }
-
+ 
 // --- Panneau nouvelle pièce ---
 function ouvrirPanel(id) {
   document.getElementById("overlay").style.display = "block";
@@ -342,12 +483,12 @@ function fermerPanels() {
   document.getElementById("err-reference").style.display = "none";
   document.getElementById("err-mouvement").style.display = "none";
 }
-
+ 
 document.getElementById("btn-nouvelle-piece").onclick = () => ouvrirPanel("panel-nouvelle");
 document.getElementById("np-annuler").onclick = fermerPanels;
 document.getElementById("overlay").onclick = fermerPanels;
 document.getElementById("mv-annuler").onclick = fermerPanels;
-
+ 
 document.getElementById("np-valider").onclick = async () => {
   const body = {
     reference: document.getElementById("np-reference").value.trim(),
@@ -356,13 +497,13 @@ document.getElementById("np-valider").onclick = async () => {
     quantite_stock: parseInt(document.getElementById("np-quantite").value, 10),
     seuil_alerte: parseInt(document.getElementById("np-seuil").value, 10),
   };
-
-  const res = await fetch(API, {
+ 
+  const res = await authFetch(API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-
+ 
   if (!res.ok) {
     const err = await res.json();
     const errEl = document.getElementById("err-reference");
@@ -370,17 +511,17 @@ document.getElementById("np-valider").onclick = async () => {
     errEl.style.display = "block";
     return;
   }
-
+ 
   document.getElementById("np-reference").value = "";
   document.getElementById("np-designation").value = "";
   document.getElementById("np-fournisseur").value = "";
   document.getElementById("np-quantite").value = "0";
   document.getElementById("np-seuil").value = "1";
-
+ 
   fermerPanels();
   chargerPieces();
 };
-
+ 
 // --- Panneau mouvement ---
 function ouvrirMouvement(id, reference) {
   pieceMouvementId = id;
@@ -389,20 +530,20 @@ function ouvrirMouvement(id, reference) {
   document.getElementById("mv-commentaire").value = "";
   ouvrirPanel("panel-mouvement");
 }
-
+ 
 document.getElementById("mv-valider").onclick = async () => {
   const body = {
     type_mouvement: document.getElementById("mv-type").value,
     quantite: parseInt(document.getElementById("mv-quantite").value, 10),
     commentaire: document.getElementById("mv-commentaire").value.trim() || null,
   };
-
-  const res = await fetch(`${API}/${pieceMouvementId}/mouvement`, {
+ 
+  const res = await authFetch(`${API}/${pieceMouvementId}/mouvement`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-
+ 
   if (!res.ok) {
     const err = await res.json();
     const errEl = document.getElementById("err-mouvement");
@@ -410,18 +551,16 @@ document.getElementById("mv-valider").onclick = async () => {
     errEl.style.display = "block";
     return;
   }
-
+ 
   fermerPanels();
   chargerPieces();
 };
-
+ 
 async function supprimerPiece(id) {
   if (!confirm("Supprimer cette pièce définitivement ?")) return;
-  await fetch(`${API}/${id}`, { method: "DELETE" });
+  await authFetch(`${API}/${id}`, { method: "DELETE" });
   chargerPieces();
 }
-
-chargerPieces();
 </script>
 </body>
 </html>
