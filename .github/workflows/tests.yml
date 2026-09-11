@@ -7,7 +7,15 @@ on:
     branches: [ main, dev ]
   pull_request:
     branches: [ main ]
+# Empêche deux exécutions de tourner en même temps : la seconde attend
+# que la première soit terminée, au lieu de se lancer en parallèle.
+# Évite les conflits quand deux workflows tentent de publier sur
+# gh-pages au même moment (ex: push sur dev suivi de près par un merge).
 
+concurrency:
+  group: gmao-ci
+  cancel-in-progress: false
+  
 jobs:
   test:
     runs-on: ubuntu-latest
