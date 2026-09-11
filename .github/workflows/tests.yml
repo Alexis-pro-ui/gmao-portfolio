@@ -12,6 +12,7 @@ on:
 # que la première soit terminée, au lieu de se lancer en parallèle.
 # Évite les conflits quand deux workflows tentent de publier sur
 # gh-pages au même moment (ex: push sur dev suivi de près par un merge).
+
 concurrency:
   group: gmao-ci
   cancel-in-progress: false
@@ -45,9 +46,6 @@ jobs:
             curl -s http://127.0.0.1:8000/api/pieces > /dev/null && break
             sleep 1
           done
- 
-      - name: Créer le compte de test
-        run: python creer_utilisateur.py testeur Test1234!
  
       - name: Lancer la suite de tests (génère les données Allure)
         id: tests
