@@ -1,42 +1,42 @@
 name: Tests
-
-# Se déclenche automatiquement à chaque push et à chaque pull request
-# sur la branche main.
+ 
+# Se déclenche automatiquement à chaque push sur main ou dev,
+# et à chaque pull request visant main.
 on:
   push:
     branches: [ main, dev ]
   pull_request:
     branches: [ main ]
+ 
 # Empêche deux exécutions de tourner en même temps : la seconde attend
 # que la première soit terminée, au lieu de se lancer en parallèle.
 # Évite les conflits quand deux workflows tentent de publier sur
 # gh-pages au même moment (ex: push sur dev suivi de près par un merge).
-
 concurrency:
   group: gmao-ci
   cancel-in-progress: false
-  
+ 
 jobs:
   test:
     runs-on: ubuntu-latest
-
+ 
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
-
+ 
       - name: Installer Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
+ 
       - name: Installer les dépendances
         run: |
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-
+ 
       - name: Installer les navigateurs Playwright
         run: playwright install --with-deps chromium
-
+ 
       - name: Démarrer le serveur en arrière-plan
         run: |
           uvicorn main:app --host 127.0.0.1 --port 8000 &
@@ -45,19 +45,34 @@ jobs:
             curl -s http://127.0.0.1:8000/api/pieces > /dev/null && break
             sleep 1
           done
-
+ 
+      - name: Créer le compte de test
+        run: python creer_utilisateur.py testeur Test1234!
+ 
       - name: Lancer la suite de tests (génère les données Allure)
         id: tests
         run: pytest tests/ -v --alluredir=allure-results
         continue-on-error: true  # on veut publier le rapport même si un test échoue
  
-      - name: Générer le rapport Allure (avec historique des exécutions précédentes)
-        uses: simple-elf/allure-report-action@master
+      - name: Installer Allure Commandline
         if: always()
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-          keep_reports: 20
+        run: |
+          curl -o allure.zip -Ls https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.zip
+          unzip -q allure.zip -d "$HOME"
+          echo "$HOME/allure-2.27.0/bin" >> "$GITHUB_PATH"
+ 
+      - name: Récupérer l'historique du rapport précédent (s'il existe)
+        if: always()
+        run: |
+          mkdir -p allure-results/history
+          git fetch origin gh-pages --depth=1 2>/dev/null || true
+          git archive origin/gh-pages -- history 2>/dev/null | tar -x -C allure-results \
+            && echo "Historique précédent récupéré." \
+            || echo "Pas d'historique précédent, on repart de zéro."
+ 
+      - name: Générer le rapport Allure
+        if: always()
+        run: allure generate allure-results -o allure-report --clean
  
       - name: Publier le rapport sur GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -65,7 +80,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: allure-report
  
       - name: Faire échouer le job si des tests ont échoué
         if: steps.tests.outcome == 'failure'
