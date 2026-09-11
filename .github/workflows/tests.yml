@@ -46,7 +46,9 @@ jobs:
             curl -s http://127.0.0.1:8000/api/pieces > /dev/null && break
             sleep 1
           done
- 
+      - name: Créer le compte de test
+        run: python creer_utilisateur.py testeur Test1234!
+        
       - name: Lancer la suite de tests (génère les données Allure)
         id: tests
         run: pytest tests/ -v --alluredir=allure-results
