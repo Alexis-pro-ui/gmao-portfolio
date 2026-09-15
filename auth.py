@@ -69,3 +69,20 @@ def get_utilisateur_courant(
     if utilisateur is None:
         raise exception_auth
     return utilisateur
+
+
+def exiger_droit(nom_droit: str):
+    """
+    Fabrique de dépendance : exiger_droit("ajouter") renvoie une
+    dépendance qui vérifie que l'utilisateur connecté a bien le
+    champ `peut_ajouter` à True, sinon lève une erreur 403.
+    """
+    def verification(utilisateur: Utilisateur = Depends(get_utilisateur_courant)) -> Utilisateur:
+        if not getattr(utilisateur, f"peut_{nom_droit}", False):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Droit manquant : {nom_droit}",
+            )
+        return utilisateur
+
+    return verification
