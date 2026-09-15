@@ -28,7 +28,13 @@ class MouvementStock(SQLModel, table=True):
     date: datetime = Field(default_factory=datetime.utcnow)
     commentaire: Optional[str] = None
 
+
 class Utilisateur(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(index=True, unique=True)
     mot_de_passe_hache: str
+    peut_lire: bool = Field(default=True)
+    peut_ajouter: bool = Field(default=False)
+    peut_modifier: bool = Field(default=False)
+    peut_supprimer: bool = Field(default=False)
+    peut_gerer_utilisateurs: bool = Field(default=False)

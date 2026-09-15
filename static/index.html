@@ -29,202 +29,144 @@
     line-height: 1.5;
   }
   .mono { font-family: 'IBM Plex Mono', monospace; }
- 
-  /* Écran de connexion */
+
   #login-screen {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: fixed; inset: 0; background: var(--bg); z-index: 100;
+    display: flex; align-items: center; justify-content: center;
   }
   .login-box {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-top: 3px solid var(--accent);
-    border-radius: 4px;
-    padding: 32px;
-    width: 320px;
+    background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--accent);
+    border-radius: 4px; padding: 32px; width: 320px;
   }
-  .login-box h1 {
-    font-size: 18px;
-    margin: 0 0 4px;
-  }
-  .login-box p {
-    color: var(--ink-muted);
-    font-size: 13px;
-    margin: 0 0 20px;
-  }
+  .login-box h1 { font-size: 18px; margin: 0 0 4px; }
+  .login-box p { color: var(--ink-muted); font-size: 13px; margin: 0 0 20px; }
   #login-error {
-    display: none;
-    background: var(--danger-bg);
-    color: var(--danger);
-    padding: 8px 10px;
-    border-radius: 3px;
-    font-size: 13px;
-    margin-top: 12px;
+    display: none; background: var(--danger-bg); color: var(--danger);
+    padding: 8px 10px; border-radius: 3px; font-size: 13px; margin-top: 12px;
   }
-  #app-content { display: none; }
- 
- 
-  header {
-    background: var(--surface);
-    border-bottom: 3px solid var(--accent);
-    padding: 20px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+  #app-content { display: none; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 240px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; padding: 20px 0;
   }
-  header h1 {
-    font-size: 19px;
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: 0.2px;
+  .sidebar-brand {
+    padding: 0 20px 20px; font-weight: 700; font-size: 16px;
+    border-bottom: 1px solid var(--line); margin-bottom: 12px;
   }
-  header p {
-    margin: 2px 0 0;
-    color: var(--ink-muted);
-    font-size: 13px;
+  .menu-item { border-bottom: 1px solid var(--line); }
+  .menu-toggle {
+    width: 100%; text-align: left; background: none; border: none; padding: 13px 20px;
+    font-family: inherit; font-size: 14px; font-weight: 600; color: var(--ink);
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
   }
+  .menu-toggle:hover { background: var(--bg); }
+  .chevron { transition: transform 0.15s ease; color: var(--ink-muted); }
+  .menu-item.open .chevron { transform: rotate(90deg); }
+  .submenu { max-height: 0; overflow: hidden; transition: max-height 0.15s ease; }
+  .menu-item.open .submenu { max-height: 200px; }
+  .submenu a, .submenu button.submenu-link {
+    display: block; width: 100%; text-align: left; padding: 10px 20px 10px 36px;
+    font-size: 13.5px; font-family: inherit; color: var(--ink-muted);
+    text-decoration: none; background: none; border: none; cursor: pointer;
+  }
+  .submenu a:hover, .submenu button.submenu-link:hover { color: var(--ink); background: var(--bg); }
+
+  .sidebar-footer { margin-top: auto; padding: 16px 20px 0; }
+
+  .main-area { flex: 1; min-width: 0; }
+
+  header { background: var(--surface); border-bottom: 3px solid var(--accent); padding: 20px 32px; }
+  header h1 { font-size: 19px; font-weight: 700; margin: 0; letter-spacing: 0.2px; }
+  header p { margin: 2px 0 0; color: var(--ink-muted); font-size: 13px; }
+
   .btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 3px;
-    cursor: pointer;
+    background: var(--accent); color: white; border: none; padding: 10px 18px;
+    font-family: inherit; font-size: 14px; font-weight: 600; border-radius: 3px; cursor: pointer;
   }
   .btn:hover { background: var(--accent-dark); }
-  .btn-ghost {
-    background: transparent;
-    color: var(--ink-muted);
-    border: 1px solid var(--line);
-  }
+  .btn-ghost { background: transparent; color: var(--ink-muted); border: 1px solid var(--line); }
   .btn-ghost:hover { border-color: var(--ink-muted); color: var(--ink); }
   .btn-danger { background: var(--danger); }
   .btn-danger:hover { background: #9E3623; }
   .btn-small { padding: 6px 12px; font-size: 13px; }
- 
-  main {
-    max-width: 1040px;
-    margin: 32px auto;
-    padding: 0 32px;
+  .btn:disabled, .submenu-link:disabled, .field input:disabled, .field select:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
- 
+  .btn:disabled:hover { background: var(--accent); }
+  .btn-ghost:disabled:hover { border-color: var(--line); color: var(--ink-muted); }
+
+  main { max-width: 1040px; margin: 32px; padding: 0; }
+
   #alerte-banner {
-    display: none;
-    background: var(--danger-bg);
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    padding: 12px 16px;
-    border-radius: 3px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    font-weight: 500;
+    display: none; background: var(--danger-bg); border: 1px solid var(--danger); color: var(--danger);
+    padding: 12px 16px; border-radius: 3px; margin-bottom: 20px; font-size: 14px; font-weight: 500;
   }
- 
-  .table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    overflow: hidden;
-  }
+
+  .table-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
   table { width: 100%; border-collapse: collapse; }
   thead th {
-    text-align: left;
-    padding: 12px 16px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ink-muted);
-    border-bottom: 1px solid var(--line);
+    text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600;
+    color: var(--ink-muted); border-bottom: 1px solid var(--line);
   }
-  tbody td {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--line);
-    font-size: 14px;
-    vertical-align: middle;
-  }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr.stock-bas { background: var(--danger-bg); }
- 
-  .ref { font-weight: 600; }
-  .qty { font-weight: 600; font-size: 15px; }
-  .badge-alerte {
-    display: inline-block;
-    margin-left: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--danger);
-  }
-  .actions { display: flex; gap: 6px; }
- 
-  .empty-state {
-    padding: 48px 24px;
-    text-align: center;
-    color: var(--ink-muted);
-  }
- 
-  /* Panneau latéral (formulaire) */
-  .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(20, 26, 22, 0.35);
-    z-index: 10;
-  }
-  .panel {
-    position: fixed;
-    top: 0; right: 0; bottom: 0;
-    width: 380px;
-    background: var(--surface);
-    box-shadow: -4px 0 24px rgba(0,0,0,0.12);
-    padding: 28px;
-    overflow-y: auto;
-    z-index: 11;
-  }
-  .panel h2 { font-size: 17px; margin: 0 0 20px; }
-  .field { margin-bottom: 16px; }
-  .field label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ink-muted);
-    margin-bottom: 5px;
-  }
-  .field input, .field select {
+  .filter-row th { padding: 6px 16px 10px; }
+  .filtre-colonne {
     width: 100%;
-    padding: 9px 10px;
+    padding: 6px 8px;
     border: 1px solid var(--line);
     border-radius: 3px;
     font-family: inherit;
-    font-size: 14px;
-    background: white;
+    font-size: 12.5px;
+    font-weight: 400;
+    background: var(--bg);
+  }
+  .filtre-colonne:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+  tbody td { padding: 14px 16px; border-bottom: 1px solid var(--line); font-size: 14px; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr.stock-bas { background: var(--danger-bg); }
+
+  .ref { font-weight: 600; }
+  .qty { font-weight: 600; font-size: 15px; }
+  .badge-alerte { display: inline-block; margin-left: 8px; font-size: 11px; font-weight: 700; color: var(--danger); }
+  .actions { display: flex; gap: 6px; }
+
+  .empty-state { padding: 48px 24px; text-align: center; color: var(--ink-muted); }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(20, 26, 22, 0.35); z-index: 10; }
+  .panel {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 380px; background: var(--surface);
+    box-shadow: -4px 0 24px rgba(0,0,0,0.12); padding: 28px; overflow-y: auto; z-index: 11;
+  }
+  .panel h2 { font-size: 17px; margin: 0 0 20px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-muted); margin-bottom: 5px; }
+  .field input, .field select {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 3px;
+    font-family: inherit; font-size: 14px; background: white;
   }
   .field input:focus, .field select:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: -1px;
-    border-color: var(--accent);
+    outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent);
   }
-  .field-error {
-    color: var(--danger);
-    font-size: 12px;
-    margin-top: 4px;
-    display: none;
+  .field-error { color: var(--danger); font-size: 12px; margin-top: 4px; display: none; }
+  .panel-actions { display: flex; gap: 8px; margin-top: 24px; }
+
+  .liste-utilisateurs-item {
+    display: block; width: 100%; text-align: left; background: none; border: none;
+    border-bottom: 1px solid var(--line); padding: 12px 4px; font-family: inherit;
+    font-size: 14px; color: var(--ink); cursor: pointer;
   }
-  .panel-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 24px;
-  }
+  .liste-utilisateurs-item:hover { background: var(--bg); }
+  .liste-utilisateurs-item .droits-resume { display: block; font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+
+  .checkbox-field { display: flex !important; align-items: center; gap: 8px; font-weight: 400; margin-bottom: 10px; }
+  .checkbox-field input { width: auto !important; flex-shrink: 0; }
 </style>
 </head>
 <body>
- 
+
 <div id="login-screen">
   <div class="login-box">
     <h1>GMAO</h1>
@@ -241,46 +183,70 @@
     <div id="login-error"></div>
   </div>
 </div>
- 
+
 <div id="app-content">
- 
-<header>
-  <div>
-    <h1>GMAO — Stock pièces de rechange</h1>
-    <p>Suivi des références, seuils d'alerte et mouvements</p>
-  </div>
-  <div style="display:flex; gap:8px;">
-    <button class="btn" id="btn-nouvelle-piece">+ Nouvelle pièce</button>
-    <button class="btn btn-ghost" id="btn-logout">Déconnexion</button>
-  </div>
-</header>
- 
-<main>
-  <div id="alerte-banner"></div>
- 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Référence</th>
-          <th>Désignation</th>
-          <th>Fournisseur</th>
-          <th>Stock</th>
-          <th>Seuil</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="table-body">
-      </tbody>
-    </table>
-    <div class="empty-state" id="empty-state" style="display:none;">
-      Aucune pièce en stock pour l'instant. Ajoute ta première pièce pour commencer.
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">GMAO</div>
+
+    <div class="menu-item" id="menu-pieces">
+      <button class="menu-toggle" data-target="submenu-pieces">Pièces <span class="chevron">›</span></button>
+      <div class="submenu" id="submenu-pieces">
+        <button class="submenu-link" id="nav-nouvelle-piece">+ Nouvelle pièce</button>
+      </div>
     </div>
+
+    <div class="menu-item" id="menu-utilisateurs">
+      <button class="menu-toggle" data-target="submenu-utilisateurs">Utilisateurs <span class="chevron">›</span></button>
+      <div class="submenu" id="submenu-utilisateurs">
+        <button class="submenu-link" id="nav-gestion-utilisateurs">Gestion des utilisateurs</button>
+        <button class="submenu-link" id="nav-ajouter-utilisateur">Ajouter un utilisateur</button>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="btn btn-ghost" id="btn-logout" style="width:100%;">Déconnexion</button>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header>
+      <h1>GMAO — Stock pièces de rechange</h1>
+      <p>Suivi des références, seuils d'alerte et mouvements</p>
+    </header>
+
+    <main>
+      <div id="alerte-banner"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Référence</th><th>Désignation</th><th>Fournisseur</th><th>Stock</th><th>Seuil</th><th></th>
+            </tr>
+            <tr class="filter-row">
+              <th><input type="text" class="filtre-colonne" id="filtre-reference" placeholder="Filtrer..." /></th>
+              <th><input type="text" class="filtre-colonne" id="filtre-designation" placeholder="Filtrer..." /></th>
+              <th><input type="text" class="filtre-colonne" id="filtre-fournisseur" placeholder="Filtrer..." /></th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+        <div class="empty-state" id="empty-state" style="display:none;">
+          Aucune pièce en stock pour l'instant. Ajoute ta première pièce pour commencer.
+        </div>
+      </div>
+    </main>
   </div>
-</main>
- 
+
+</div>
+</div> <!-- fin #app-content -->
+
 <div class="overlay" id="overlay"></div>
- 
+
 <!-- Panneau : nouvelle pièce -->
 <div class="panel" id="panel-nouvelle" style="display:none;">
   <h2>Nouvelle pièce</h2>
@@ -310,7 +276,7 @@
     <button class="btn btn-ghost" id="np-annuler">Annuler</button>
   </div>
 </div>
- 
+
 <!-- Panneau : mouvement de stock -->
 <div class="panel" id="panel-mouvement" style="display:none;">
   <h2 id="mv-titre">Mouvement de stock</h2>
@@ -335,25 +301,64 @@
     <button class="btn btn-ghost" id="mv-annuler">Annuler</button>
   </div>
 </div>
- 
-</div> <!-- fin #app-content -->
- 
+
+<!-- Panneau : gestion des utilisateurs (liste cliquable) -->
+<div class="panel" id="panel-gestion-utilisateurs" style="display:none;">
+  <h2>Gestion des utilisateurs</h2>
+  <p style="font-size:13px; color:var(--ink-muted); margin-top:-12px;">Clique sur un utilisateur pour modifier ses droits.</p>
+  <div id="liste-utilisateurs"></div>
+</div>
+
+<!-- Panneau : ajouter un utilisateur -->
+<div class="panel" id="panel-ajout-utilisateur" style="display:none;">
+  <h2>Ajouter un utilisateur</h2>
+  <div class="field">
+    <label for="nu-username">Identifiant</label>
+    <input id="nu-username" type="text" autocomplete="off" />
+    <div class="field-error" id="err-utilisateur"></div>
+  </div>
+  <div class="field">
+    <label for="nu-password">Mot de passe</label>
+    <input id="nu-password" type="password" autocomplete="new-password" />
+  </div>
+  <div class="panel-actions">
+    <button class="btn" id="nu-valider">Créer le compte</button>
+    <button class="btn btn-ghost" id="nu-annuler">Annuler</button>
+  </div>
+</div>
+
+<!-- Panneau : édition des droits d'un utilisateur -->
+<div class="panel" id="panel-editer-droits" style="display:none;">
+  <h2 id="ed-titre">Droits</h2>
+  <div class="field">
+    <label>Droits</label>
+    <label class="checkbox-field"><input type="checkbox" id="ed-peut-lire" /> Lecture (voir les pièces)</label>
+    <label class="checkbox-field"><input type="checkbox" id="ed-peut-ajouter" /> Ajout (créer des pièces)</label>
+    <label class="checkbox-field"><input type="checkbox" id="ed-peut-modifier" /> Modification (modifier, mouvements)</label>
+    <label class="checkbox-field"><input type="checkbox" id="ed-peut-supprimer" /> Suppression</label>
+    <label class="checkbox-field"><input type="checkbox" id="ed-peut-gerer-utilisateurs" /> Gestion des utilisateurs</label>
+  </div>
+  <div class="field-error" id="err-edition-droits"></div>
+  <div class="panel-actions">
+    <button class="btn" id="ed-valider">Enregistrer</button>
+    <button class="btn btn-ghost" id="ed-annuler">Annuler</button>
+  </div>
+</div>
+
 <script>
 const API = "/api/pieces";
+const UTILISATEURS_API = "/api/auth/utilisateurs";
 let pieceMouvementId = null;
- 
+let utilisateursCache = [];
+let utilisateurEnEditionId = null;
+let mesDroits = null;
+
 // --- Gestion du token d'authentification ---
- 
-function getToken() {
-  return localStorage.getItem("gmao_token");
-}
-function setToken(token) {
-  localStorage.setItem("gmao_token", token);
-}
-function clearToken() {
-  localStorage.removeItem("gmao_token");
-}
- 
+
+function getToken() { return localStorage.getItem("gmao_token"); }
+function setToken(token) { localStorage.setItem("gmao_token", token); }
+function clearToken() { localStorage.removeItem("gmao_token"); }
+
 function afficherLogin() {
   document.getElementById("login-screen").style.display = "flex";
   document.getElementById("app-content").style.display = "none";
@@ -362,10 +367,7 @@ function afficherApp() {
   document.getElementById("login-screen").style.display = "none";
   document.getElementById("app-content").style.display = "block";
 }
- 
-// Wrapper autour de fetch() qui ajoute le token à chaque requête API,
-// et renvoie automatiquement à l'écran de login si le token est
-// invalide/expiré (réponse 401).
+
 async function authFetch(url, options = {}) {
   options.headers = { ...(options.headers || {}), "Authorization": `Bearer ${getToken()}` };
   const res = await fetch(url, options);
@@ -376,86 +378,101 @@ async function authFetch(url, options = {}) {
   }
   return res;
 }
- 
+
+async function chargerMesDroits() {
+  const res = await authFetch("/api/auth/moi");
+  mesDroits = await res.json();
+  appliquerDroitsSurUI();
+}
+
+function appliquerDroitsSurUI() {
+  // Navigation
+  document.getElementById("nav-nouvelle-piece").disabled = !mesDroits.peut_ajouter;
+  document.getElementById("nav-gestion-utilisateurs").disabled = !mesDroits.peut_gerer_utilisateurs;
+  document.getElementById("nav-ajouter-utilisateur").disabled = !mesDroits.peut_gerer_utilisateurs;
+
+  // Panneau nouvelle pièce
+  ["np-reference", "np-designation", "np-fournisseur", "np-quantite", "np-seuil"].forEach(id => {
+    document.getElementById(id).disabled = !mesDroits.peut_ajouter;
+  });
+  document.getElementById("np-valider").disabled = !mesDroits.peut_ajouter;
+
+  // Panneau mouvement
+  ["mv-type", "mv-quantite", "mv-commentaire"].forEach(id => {
+    document.getElementById(id).disabled = !mesDroits.peut_modifier;
+  });
+  document.getElementById("mv-valider").disabled = !mesDroits.peut_modifier;
+
+  // Panneau ajouter utilisateur
+  ["nu-username", "nu-password"].forEach(id => {
+    document.getElementById(id).disabled = !mesDroits.peut_gerer_utilisateurs;
+  });
+  document.getElementById("nu-valider").disabled = !mesDroits.peut_gerer_utilisateurs;
+
+  // Panneau édition des droits
+  ["ed-peut-lire", "ed-peut-ajouter", "ed-peut-modifier", "ed-peut-supprimer", "ed-peut-gerer-utilisateurs"].forEach(id => {
+    document.getElementById(id).disabled = !mesDroits.peut_gerer_utilisateurs;
+  });
+  document.getElementById("ed-valider").disabled = !mesDroits.peut_gerer_utilisateurs;
+}
+
 document.getElementById("btn-login").onclick = async () => {
   const username = document.getElementById("login-username").value.trim();
   const password = document.getElementById("login-password").value;
   const errEl = document.getElementById("login-error");
   errEl.style.display = "none";
- 
+
   const body = new URLSearchParams();
   body.set("username", username);
   body.set("password", password);
- 
+
   const res = await fetch("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: body,
   });
- 
+
   if (!res.ok) {
     errEl.textContent = "Identifiant ou mot de passe incorrect";
     errEl.style.display = "block";
     return;
   }
- 
+
   const data = await res.json();
   setToken(data.access_token);
   afficherApp();
+  await chargerMesDroits();
   chargerPieces();
 };
- 
+
 document.getElementById("btn-logout").onclick = () => {
   clearToken();
   afficherLogin();
 };
- 
-// Point d'entrée : si un token existe déjà (session précédente), on
-// tente directement d'afficher l'appli ; authFetch renverra vers le
-// login automatiquement si ce token n'est plus valide.
+
 if (getToken()) {
   afficherApp();
-  chargerPieces();
+  chargerMesDroits().then(chargerPieces);
 } else {
   afficherLogin();
 }
- 
+
+// --- Menu latéral (accordéon) ---
+document.querySelectorAll(".menu-toggle").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.closest(".menu-item").classList.toggle("open");
+  });
+});
+
+let piecesCache = [];
+
 async function chargerPieces() {
   const res = await authFetch(API);
-  const pieces = await res.json();
-  const tbody = document.getElementById("table-body");
-  const emptyState = document.getElementById("empty-state");
-  tbody.innerHTML = "";
- 
-  if (pieces.length === 0) {
-    emptyState.style.display = "block";
-  } else {
-    emptyState.style.display = "none";
-  }
- 
-  let nbAlertes = 0;
- 
-  pieces.forEach(p => {
-    const enAlerte = p.quantite_stock <= p.seuil_alerte;
-    if (enAlerte) nbAlertes++;
- 
-    const tr = document.createElement("tr");
-    if (enAlerte) tr.classList.add("stock-bas");
- 
-    tr.innerHTML = `
-      <td class="ref mono">${escapeHtml(p.reference)}</td>
-      <td>${escapeHtml(p.designation)}</td>
-      <td>${escapeHtml(p.fournisseur || "—")}</td>
-      <td class="qty mono">${p.quantite_stock}${enAlerte ? '<span class="badge-alerte">STOCK BAS</span>' : ''}</td>
-      <td class="mono">${p.seuil_alerte}</td>
-      <td class="actions">
-        <button class="btn btn-ghost btn-small" onclick="ouvrirMouvement(${p.id}, '${escapeHtml(p.reference)}')">Mouvement</button>
-        <button class="btn btn-danger btn-small" onclick="supprimerPiece(${p.id})">Supprimer</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
- 
+  piecesCache = await res.json();
+
+  // La bannière d'alerte reflète toujours l'ensemble des pièces,
+  // même si le tableau affiché est filtré par la recherche.
+  const nbAlertes = piecesCache.filter(p => p.quantite_stock <= p.seuil_alerte).length;
   const banner = document.getElementById("alerte-banner");
   if (nbAlertes > 0) {
     banner.style.display = "block";
@@ -463,15 +480,67 @@ async function chargerPieces() {
   } else {
     banner.style.display = "none";
   }
+
+  afficherPiecesFiltrees();
 }
- 
+
+function afficherPiecesFiltrees() {
+  const filtreRef = document.getElementById("filtre-reference").value.trim().toLowerCase();
+  const filtreDesignation = document.getElementById("filtre-designation").value.trim().toLowerCase();
+  const filtreFournisseur = document.getElementById("filtre-fournisseur").value.trim().toLowerCase();
+
+  const pieces = piecesCache.filter(p =>
+    p.reference.toLowerCase().includes(filtreRef) &&
+    p.designation.toLowerCase().includes(filtreDesignation) &&
+    (p.fournisseur || "").toLowerCase().includes(filtreFournisseur)
+  );
+
+  const tbody = document.getElementById("table-body");
+  const emptyState = document.getElementById("empty-state");
+  tbody.innerHTML = "";
+
+  const unFiltreActif = filtreRef || filtreDesignation || filtreFournisseur;
+
+  if (pieces.length === 0) {
+    emptyState.style.display = "block";
+    emptyState.textContent = unFiltreActif
+      ? "Aucune pièce ne correspond aux filtres."
+      : "Aucune pièce en stock pour l'instant. Ajoute ta première pièce pour commencer.";
+  } else {
+    emptyState.style.display = "none";
+  }
+
+  pieces.forEach(p => {
+    const enAlerte = p.quantite_stock <= p.seuil_alerte;
+
+    const tr = document.createElement("tr");
+    if (enAlerte) tr.classList.add("stock-bas");
+
+    tr.innerHTML = `
+      <td class="ref mono">${escapeHtml(p.reference)}</td>
+      <td>${escapeHtml(p.designation)}</td>
+      <td>${escapeHtml(p.fournisseur || "—")}</td>
+      <td class="qty mono">${p.quantite_stock}${enAlerte ? '<span class="badge-alerte">STOCK BAS</span>' : ''}</td>
+      <td class="mono">${p.seuil_alerte}</td>
+      <td class="actions">
+        <button class="btn btn-ghost btn-small" ${mesDroits.peut_modifier ? '' : 'disabled'} onclick="ouvrirMouvement(${p.id}, '${escapeHtml(p.reference)}')">Mouvement</button>
+        <button class="btn btn-danger btn-small" ${mesDroits.peut_supprimer ? '' : 'disabled'} onclick="supprimerPiece(${p.id})">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+["filtre-reference", "filtre-designation", "filtre-fournisseur"].forEach(id => {
+  document.getElementById(id).addEventListener("input", afficherPiecesFiltrees);
+});
+
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
 }
- 
-// --- Panneau nouvelle pièce ---
+
 function ouvrirPanel(id) {
   document.getElementById("overlay").style.display = "block";
   document.getElementById(id).style.display = "block";
@@ -480,15 +549,119 @@ function fermerPanels() {
   document.getElementById("overlay").style.display = "none";
   document.getElementById("panel-nouvelle").style.display = "none";
   document.getElementById("panel-mouvement").style.display = "none";
+  document.getElementById("panel-gestion-utilisateurs").style.display = "none";
+  document.getElementById("panel-ajout-utilisateur").style.display = "none";
+  document.getElementById("panel-editer-droits").style.display = "none";
   document.getElementById("err-reference").style.display = "none";
   document.getElementById("err-mouvement").style.display = "none";
+  document.getElementById("err-utilisateur").style.display = "none";
+  document.getElementById("err-edition-droits").style.display = "none";
 }
- 
-document.getElementById("btn-nouvelle-piece").onclick = () => ouvrirPanel("panel-nouvelle");
+
+document.getElementById("nav-nouvelle-piece").onclick = () => ouvrirPanel("panel-nouvelle");
+document.getElementById("nav-gestion-utilisateurs").onclick = () => {
+  ouvrirPanel("panel-gestion-utilisateurs");
+  chargerListeUtilisateurs();
+};
+document.getElementById("nav-ajouter-utilisateur").onclick = () => ouvrirPanel("panel-ajout-utilisateur");
+
+// --- Liste des utilisateurs (cliquable) ---
+
+function resumeDroits(u) {
+  const droits = [];
+  if (u.peut_lire) droits.push("Lecture");
+  if (u.peut_ajouter) droits.push("Ajout");
+  if (u.peut_modifier) droits.push("Modification");
+  if (u.peut_supprimer) droits.push("Suppression");
+  if (u.peut_gerer_utilisateurs) droits.push("Gestion utilisateurs");
+  return droits.length > 0 ? droits.join(", ") : "Aucun droit";
+}
+
+async function chargerListeUtilisateurs() {
+  const res = await authFetch(UTILISATEURS_API);
+  utilisateursCache = await res.json();
+  const liste = document.getElementById("liste-utilisateurs");
+  liste.innerHTML = utilisateursCache.map(u => `
+    <button class="liste-utilisateurs-item" onclick="ouvrirEditionDroits(${u.id})">
+      ${escapeHtml(u.username)}
+      <span class="droits-resume">${escapeHtml(resumeDroits(u))}</span>
+    </button>
+  `).join("");
+}
+
+function ouvrirEditionDroits(id) {
+  const u = utilisateursCache.find(x => x.id === id);
+  if (!u) return;
+  utilisateurEnEditionId = id;
+
+  document.getElementById("ed-titre").textContent = `Droits — ${u.username}`;
+  document.getElementById("ed-peut-lire").checked = u.peut_lire;
+  document.getElementById("ed-peut-ajouter").checked = u.peut_ajouter;
+  document.getElementById("ed-peut-modifier").checked = u.peut_modifier;
+  document.getElementById("ed-peut-supprimer").checked = u.peut_supprimer;
+  document.getElementById("ed-peut-gerer-utilisateurs").checked = u.peut_gerer_utilisateurs;
+
+  ouvrirPanel("panel-editer-droits");
+}
+
+document.getElementById("ed-valider").onclick = async () => {
+  const body = {
+    peut_lire: document.getElementById("ed-peut-lire").checked,
+    peut_ajouter: document.getElementById("ed-peut-ajouter").checked,
+    peut_modifier: document.getElementById("ed-peut-modifier").checked,
+    peut_supprimer: document.getElementById("ed-peut-supprimer").checked,
+    peut_gerer_utilisateurs: document.getElementById("ed-peut-gerer-utilisateurs").checked,
+  };
+
+  const res = await authFetch(`${UTILISATEURS_API}/${utilisateurEnEditionId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    const errEl = document.getElementById("err-edition-droits");
+    errEl.textContent = err.detail;
+    errEl.style.display = "block";
+    return;
+  }
+
+  fermerPanels();
+  chargerListeUtilisateurs();
+};
+
+document.getElementById("ed-annuler").onclick = fermerPanels;
 document.getElementById("np-annuler").onclick = fermerPanels;
 document.getElementById("overlay").onclick = fermerPanels;
 document.getElementById("mv-annuler").onclick = fermerPanels;
- 
+document.getElementById("nu-annuler").onclick = fermerPanels;
+
+document.getElementById("nu-valider").onclick = async () => {
+  const body = {
+    username: document.getElementById("nu-username").value.trim(),
+    mot_de_passe: document.getElementById("nu-password").value,
+  };
+
+  const res = await authFetch(UTILISATEURS_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    const errEl = document.getElementById("err-utilisateur");
+    errEl.textContent = err.detail;
+    errEl.style.display = "block";
+    return;
+  }
+
+  document.getElementById("nu-username").value = "";
+  document.getElementById("nu-password").value = "";
+  fermerPanels();
+};
+
 document.getElementById("np-valider").onclick = async () => {
   const body = {
     reference: document.getElementById("np-reference").value.trim(),
@@ -497,13 +670,13 @@ document.getElementById("np-valider").onclick = async () => {
     quantite_stock: parseInt(document.getElementById("np-quantite").value, 10),
     seuil_alerte: parseInt(document.getElementById("np-seuil").value, 10),
   };
- 
+
   const res = await authFetch(API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
- 
+
   if (!res.ok) {
     const err = await res.json();
     const errEl = document.getElementById("err-reference");
@@ -511,18 +684,17 @@ document.getElementById("np-valider").onclick = async () => {
     errEl.style.display = "block";
     return;
   }
- 
+
   document.getElementById("np-reference").value = "";
   document.getElementById("np-designation").value = "";
   document.getElementById("np-fournisseur").value = "";
   document.getElementById("np-quantite").value = "0";
   document.getElementById("np-seuil").value = "1";
- 
+
   fermerPanels();
   chargerPieces();
 };
- 
-// --- Panneau mouvement ---
+
 function ouvrirMouvement(id, reference) {
   pieceMouvementId = id;
   document.getElementById("mv-titre").textContent = `Mouvement — ${reference}`;
@@ -530,20 +702,20 @@ function ouvrirMouvement(id, reference) {
   document.getElementById("mv-commentaire").value = "";
   ouvrirPanel("panel-mouvement");
 }
- 
+
 document.getElementById("mv-valider").onclick = async () => {
   const body = {
     type_mouvement: document.getElementById("mv-type").value,
     quantite: parseInt(document.getElementById("mv-quantite").value, 10),
     commentaire: document.getElementById("mv-commentaire").value.trim() || null,
   };
- 
+
   const res = await authFetch(`${API}/${pieceMouvementId}/mouvement`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
- 
+
   if (!res.ok) {
     const err = await res.json();
     const errEl = document.getElementById("err-mouvement");
@@ -551,11 +723,11 @@ document.getElementById("mv-valider").onclick = async () => {
     errEl.style.display = "block";
     return;
   }
- 
+
   fermerPanels();
   chargerPieces();
 };
- 
+
 async function supprimerPiece(id) {
   if (!confirm("Supprimer cette pièce définitivement ?")) return;
   await authFetch(`${API}/${id}`, { method: "DELETE" });

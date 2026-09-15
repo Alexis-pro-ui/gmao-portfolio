@@ -32,7 +32,15 @@ with Session(engine) as session:
     if existant:
         print(f"ℹ️  L'utilisateur '{username}' existe déjà, rien à faire.")
     else:
-        utilisateur = Utilisateur(username=username, mot_de_passe_hache=hacher_mot_de_passe(mot_de_passe))
+        utilisateur = Utilisateur(
+            username=username,
+            mot_de_passe_hache=hacher_mot_de_passe(mot_de_passe),
+            peut_lire=True,
+            peut_ajouter=True,
+            peut_modifier=True,
+            peut_supprimer=True,
+            peut_gerer_utilisateurs=True,
+        )
         session.add(utilisateur)
         session.commit()
         print(f"✅ Utilisateur '{username}' créé avec succès.")
