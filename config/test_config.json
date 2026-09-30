@@ -1,0 +1,25 @@
+{
+  "base_url": "http://127.0.0.1:8000",
+  "comptes": [
+    {
+      "username": "compte_test_1",
+      "password": "Motdepasse1!"
+    },
+    {
+      "username": "compte_test_2",
+      "password": "Motdepasse2!"
+    }
+  ],
+  "pieces_test": [
+    {
+      "reference": "SUB-001",
+      "quantite_stock": 10,
+      "seuil_alerte": 2
+    },
+    {
+      "reference": "SUB-002",
+      "quantite_stock": 0,
+      "seuil_alerte": 5
+    }
+  ]
+}
