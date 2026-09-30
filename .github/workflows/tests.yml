@@ -39,7 +39,7 @@ jobs:
 
       - name: Démarrer le serveur en arrière-plan
         run: |
-          uvicorn main:app --host 127.0.0.1 --port 8000 &
+          uvicorn main:app --host 127.0.0.1 --port 8000 > server.log 2>&1 &
           echo "Attente que le serveur soit prêt..."
           for i in $(seq 1 20); do
             curl -s http://127.0.0.1:8000/api/pieces > /dev/null && break
@@ -53,6 +53,10 @@ jobs:
         id: tests
         run: pytest tests/ -v -m "not manuel" --alluredir=allure-results
         continue-on-error: true  # on veut publier le rapport même si un test échoue
+
+      - name: Afficher les logs du serveur si les tests ont échoué
+        if: steps.tests.outcome == 'failure'
+        run: cat server.log
 
       - name: Installer Allure Commandline
         if: always()
