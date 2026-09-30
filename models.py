@@ -5,7 +5,7 @@ Une "Piece" représente une pièce de rechange en stock.
 Un "MouvementStock" représente une entrée ou une sortie de stock
 pour une pièce donnée (garde un historique, utile pour la traçabilité).
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlmodel import Field, SQLModel
@@ -25,7 +25,7 @@ class MouvementStock(SQLModel, table=True):
     piece_id: int = Field(foreign_key="piece.id")
     type_mouvement: str  # "entree" ou "sortie"
     quantite: int
-    date: datetime = Field(default_factory=datetime.utcnow)
+    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     commentaire: Optional[str] = None
 
 
